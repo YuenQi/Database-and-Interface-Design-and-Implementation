@@ -16,11 +16,21 @@ $table_id = 0;
             box-sizing: border-box;
         }
 
+        .myselect {
+            width: 100%;
+            height: auto;
+            padding: 16px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            display: inline-block !important;
+        }
+
         #myInput {
             background-image: url('/css/searchicon.png');
             background-position: 10px 10px;
             background-repeat: no-repeat;
-            width: 100%;
+            width: 95%;
             font-size: 16px;
             padding: 12px 20px 12px 40px;
             border: 1px solid #ddd;
@@ -57,10 +67,22 @@ $table_id = 0;
 
     <form action="read.php" method="POST">
         <input type="hidden" name="id" value="">
-        <input type="submit" name="back" value="Go to view table page" class=" right btn brand z-depth-0">
+        <input type="submit" name="back" value="Go to view table page" class="left btn brand z-depth-0">
 
     </form>
 
+    <form action="country.php" method="POST">
+        <label for="order">Order by:</label>
+        <select name="order_list" id="order_list" class="myselect">
+            <option value="country_id">Country ID</option>
+            <option value="country">Country</option>
+            <option value="last_update">Last Update</option>
+        </select>
+        <br><br>
+        <input type="submit" name="order_submit" value="Submit" class="left btn brand z-depth-0">
+    </form>
+
+    <br>
     <h5>Type in a country: </h5>
     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for country..." title="Type in a country">
 
@@ -75,6 +97,11 @@ $table_id = 0;
         require "config/connect.php";
 
         $query = "SELECT * FROM country";
+
+        if (isset($_POST['order_list'])) {
+            $query = "SELECT * FROM country ORDER BY " . $_POST['order_list'] . ", country_id";
+        }
+
         $result = mysqli_query($conn, $query);
 
         while ($row = mysqli_fetch_array($result)) {

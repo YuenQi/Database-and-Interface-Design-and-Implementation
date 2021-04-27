@@ -3,8 +3,6 @@ include('templates/header.php');
 include('config/connect.php');
 $table_id = 0;
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -17,11 +15,21 @@ $table_id = 0;
             box-sizing: border-box;
         }
 
+        .myselect {
+            width: 100%;
+            height: auto;
+            padding: 16px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            display: inline-block !important;
+        }
+
         #myInput {
             background-image: url('/css/searchicon.png');
             background-position: 10px 10px;
             background-repeat: no-repeat;
-            width: 100%;
+            width: 95%;
             font-size: 16px;
             padding: 12px 20px 12px 40px;
             border: 1px solid #ddd;
@@ -58,10 +66,25 @@ $table_id = 0;
 
     <form action="read.php" method="POST">
         <input type="hidden" name="id" value="">
-        <input type="submit" name="back" value="Go to view table page" class=" right btn brand z-depth-0">
+        <input type="submit" name="back" value="Go to view table page" class="left btn brand z-depth-0">
 
     </form>
 
+    <form action="customer_email.php" method="POST">
+        <label for="order">Order by:</label>
+        <select name="order_list" id="order_list" class="myselect">
+            <option value="email_id">Email ID</option>
+            <option value="customer_id">Customer ID</option>
+            <option value="email">Email</option>
+            <option value="active">Active</option>
+            <option value="create_date">Creation Date</option>
+            <option value="last_update">Last Update</option>
+        </select>
+        <br><br>
+        <input type="submit" name="order_submit" value="Submit" class="left btn brand z-depth-0">
+    </form>
+
+    <br>
     <h5>Type in customer's email: </h5>
     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for customer's email..." title="Type in customer's email">
 
@@ -79,6 +102,11 @@ $table_id = 0;
         require "config/connect.php";
 
         $query = "SELECT * FROM customer_email";
+
+        if (isset($_POST['order_list'])) {
+            $query = "SELECT * FROM customer_email ORDER BY " . $_POST['order_list'] . ", email_id";
+        }
+
         $result = mysqli_query($conn, $query);
 
         while ($row = mysqli_fetch_array($result)) {
