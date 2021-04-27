@@ -1,4 +1,4 @@
-<?php 
+<?php
 include('templates/header.php');
 include('config/connect.php');
 
@@ -14,11 +14,21 @@ include('config/connect.php');
             box-sizing: border-box;
         }
 
+        .myselect {
+            width: 100%;
+            height: auto;
+            padding: 16px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            display: inline-block !important;
+        }
+
         #myInput {
             background-image: url('/css/searchicon.png');
             background-position: 10px 10px;
             background-repeat: no-repeat;
-            width: 100%;
+            width: 95%;
             font-size: 16px;
             padding: 12px 20px 12px 40px;
             border: 1px solid #ddd;
@@ -50,18 +60,27 @@ include('config/connect.php');
 </head>
 
 <body>
-
     <h2 class="center"><b>Actor</b></h2>
 
     <form action="read.php" method="POST">
         <input type="hidden" name="id" value="">
-        <input type="submit" name="back" value="Go to view table page" class=" right btn brand z-depth-0">
+        <input type="submit" name="back" value="Go to view table page" class="left btn brand z-depth-0">
 
     </form>
-    
 
+    <form action="actor.php" method="POST">
+        <label for="order">Order by:</label>
+        <select name="order_list" id="order_list" class="myselect">
+            <option value="actor_id">Actor ID</option>
+            <option value="first_name">First Name</option>
+            <option value="last_name">Last Name</option>
+            <option value="last_update">Last Update</option>
+        </select>
+        <br><br>
+        <input type="submit" name="order_submit" value="Submit" class="left btn brand z-depth-0">
+    </form>
 
-    
+    <br>
     <h5>Type in actor's first name: </h5>
     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for actor..." title="Type in actor's first name">
 
@@ -77,11 +96,18 @@ include('config/connect.php');
         require "config/connect.php";
 
         $query = "SELECT * FROM actor";
+
+        if (isset($_POST['order_list'])) {
+            $query = "SELECT * FROM actor ORDER BY " . $_POST['order_list'] . ", actor_id";
+        }
+
         $result = mysqli_query($conn, $query);
 
         while ($row = mysqli_fetch_array($result)) {
             echo '<tr><td>' . $row['actor_id'] . '</td><td>' . $row['first_name'] . '</td><td>' . $row['last_name'] . '</td><td>' . $row['last_update'] . "</td></tr>";
         }
+
+
         ?>
     </table>
 
@@ -105,8 +131,6 @@ include('config/connect.php');
             }
         }
     </script>
-
-    
 
     <h2></h2>
 
