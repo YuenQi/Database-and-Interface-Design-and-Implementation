@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
@@ -9,6 +9,7 @@ $staff_id = '';
 $rental_id ='';
 $amount = '';
 $payment_date = '';
+$check_null = 0;
 date_default_timezone_set("Asia/Kuala_Lumpur");
 $last_update = date("Y-m-d H:i:s");
 $errors = array('id'=>'', 'customer_id'=>'', 'staff_id'=>'', 'rental_id'=>'', 'amount'=>'', 'payment_date'=>'');
@@ -58,17 +59,58 @@ if(isset($_POST['submit'])){
             $result2 = mysqli_fetch_assoc($staff_id_array);
             $staff_id = $result2['staff_id'];
         }
+        
+        
+        $query_check_null_id = "SELECT payment_id FROM payment WHERE rental_id IS NULL";
+        $null_id_array = mysqli_query($conn, $query_check_null_id);
+        $result_null_id = mysqli_fetch_array($null_id_array);
+        
+        if(array_search($id_to_delete, $result_null_id, TRUE)){
+            if(!empty($_POST['rental_id'])){
+                $rental_id = $_POST['rental_id'];
+            }
+            else{
+                $query = "SELECT rental_id from payment WHERE payment_id = '$id_to_update'";
+                $rental_id_array = mysqli_query($conn, $query);
+                $result3 = mysqli_fetch_assoc($rental_id_array);
+                $rental_id = $result3['rental_id'];
+            }
+        }
+        else{
+            if(!empty($_POST['rental_id'])){
+                $rental_id = $_POST['rental_id'];
+            }
+            else{
+                $query = "SELECT rental_id from payment WHERE payment_id = '$id_to_update'";
+                $rental_id_array = mysqli_query($conn, $query);
+                $result3 = mysqli_fetch_assoc($rental_id_array);
+                $rental_id = $result3['rental_id'];
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        if (!empty($_POST['rental_id'])){
+        
+
+        /*if (!empty($_POST['rental_id'])){
             $rental_id = $_POST['rental_id'];
+        }
+        
+        elseif(empty($_POST) and ($result3['rental_id']) === NULL){
+            $check_null = 1;
         }
 
         else{
-            $query = "SELECT rental_id from payment WHERE payment_id = '$id_to_update'";
-            $rental_id_array = mysqli_query($conn, $query);
-            $result3 = mysqli_fetch_assoc($rental_id_array);
             $rental_id = $result3['rental_id'];
-        }
+        }*/
 
         if (!empty($_POST['amount'])){
             $amount = $_POST['amount'];
@@ -97,9 +139,20 @@ if(isset($_POST['submit'])){
         //
     }
     
+    /*elseif($check_null == 1){
+        $sql = "UPDATE payment SET customer_id = '$customer_id', staff_id = '$staff_id', rental_id = NULL, amount = '$amount', payment_date = '$payment_date', last_update = '$last_update' WHERE payment_id = '$id_to_update'";
+
+        if(mysqli_query($conn, $sql)){
+            header('Location: payment.php');
+        }
+        else{
+            echo 'query error: ' . mysqli_error($conn);
+        }
+    }*/
+    
     else{
 
-        $sql = "UPDATE payment SET customer_id = '$customer_id', staff_id = '$staff_id', rental_id = '$rental_id', amount = '$amount', payment_date = '$payment_date', last_update = '$last_update' WHERE payment_id = '$id_to_update'";
+        $sql = "UPDATE payment SET customer_id = $customer_id, staff_id = $staff_id, rental_id = $rental_id, amount = $amount, payment_date = '$payment_date', last_update = '$last_update' WHERE payment_id = $id_to_update";
 
         if(mysqli_query($conn, $sql)){
             header('Location: payment.php');
@@ -112,7 +165,7 @@ if(isset($_POST['submit'])){
 
 
 }
-
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>

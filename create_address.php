@@ -1,9 +1,13 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
-$id_to_create = '';
+$query_last_id = "SELECT address_id from address ORDER BY address_id DESC LIMIT 1";
+$id_array = mysqli_query($conn, $query_last_id);
+$result1 = mysqli_fetch_assoc($id_array);
+$id_to_create = $result1['address_id']+1;
+
 $street_address = '';
 $district = '';
 $city_id ='';
@@ -14,20 +18,6 @@ $last_update = date("Y-m-d H:i:s");
 $errors = array('id'=>'', 'street_address'=>'', 'district'=>'', 'city_id'=>'', 'postal_code'=>'', 'phone'=>'');
 
 if(isset($_POST['submit'])){
-
-    $id_to_create = $_POST['id'];
-
-    if(empty($_POST['id'])){
-        $errors['id'] = 'ID is required. <br />';
-    }
-    else{
-        $sql_check_id = "SELECT address_id FROM address WHERE address_id = $id_to_create";
-        $result_check_id = mysqli_query($conn, $sql_check_id);
-
-        if(mysqli_num_rows($result_check_id) > 0){
-            $errors['id'] = 'ID is already in the table. Please key in another ID. <br />';
-        }
-    }
 
     if(empty($_POST['street_address'])){
         $errors['street_address'] = 'Street address is required. <br />';
@@ -71,6 +61,7 @@ if(isset($_POST['submit'])){
         }
     }
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -80,7 +71,7 @@ if(isset($_POST['submit'])){
 
     <form action="create_address.php" class="white" method="POST">
 		<label>Address Id</label>
-        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>">
+        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>" readonly>
         <div class="red-text"><?php echo $errors['id']; ?></div>
 
 		<label>Street Address</label>

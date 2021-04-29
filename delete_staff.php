@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
@@ -102,6 +102,7 @@ if(isset($_POST['submit'])){
 
 }
 
+ob_end_flush();
 
 ?>
 

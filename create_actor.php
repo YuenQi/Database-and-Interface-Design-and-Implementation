@@ -1,9 +1,13 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
-$id_to_create = '';
+$query_last_id = "SELECT actor_id from actor ORDER BY actor_id DESC LIMIT 1";
+$id_array = mysqli_query($conn, $query_last_id);
+$result1 = mysqli_fetch_assoc($id_array);
+$id_to_create = $result1['actor_id']+1;
+
 $first_name = '';
 $last_name = '';
 date_default_timezone_set("Asia/Kuala_Lumpur");
@@ -11,20 +15,6 @@ $last_update = date("Y-m-d H:i:s");
 $errors = array('id'=>'', 'first_name'=>'', 'last_name'=>'');
 
 if(isset($_POST['submit'])){
-
-    $id_to_create = $_POST['id'];
-
-    if(empty($_POST['id'])){
-        $errors['id'] = 'ID is required. <br />';
-    }
-    else{
-        $sql_check_id = "SELECT actor_id FROM actor WHERE actor_id = $id_to_create";
-        $result_check_id = mysqli_query($conn, $sql_check_id);
-
-        if(mysqli_num_rows($result_check_id) > 0){
-            $errors['id'] = 'ID is already in the table. Please key in another ID. <br />';
-        }
-    }
 
     if(empty($_POST['first_name'])){
         $errors['first_name'] = 'First name is required. <br />';
@@ -61,6 +51,7 @@ if(isset($_POST['submit'])){
         }
     }
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -68,9 +59,9 @@ if(isset($_POST['submit'])){
 
 <body>
 
-    <form action="create_actor.php" class="white" method="POST">
+    <form action="#" class="white" method="POST">
 		<label>Actor Id</label>
-        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>">
+        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>" readonly>
         <div class="red-text"><?php echo $errors['id']; ?></div>
 
 		<label>First Name</label>

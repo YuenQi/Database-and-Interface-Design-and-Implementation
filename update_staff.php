@@ -136,9 +136,12 @@
                 }
             }
 
-            if (mysqli_query($conn, $sql)) {
-                header('Location: staff.php');
-            } else {
+            if (mysqli_query($conn, $sql)) { ?>
+                <script>
+                    window.location = 'staff.php';
+                </script>
+            <?php }
+            else {
                 echo 'query error: ' . mysqli_error($conn);
             }
         }

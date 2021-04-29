@@ -1,4 +1,4 @@
-<?php
+<?php 
 include('templates/header.php');
 include('config/connect.php');
 
@@ -60,6 +60,7 @@ include('config/connect.php');
 </head>
 
 <body>
+
     <h2 class="center"><b>Actor</b></h2>
 
     <form action="read.php" method="POST">
@@ -67,7 +68,7 @@ include('config/connect.php');
         <input type="submit" name="back" value="Go to view table page" class="left btn brand z-depth-0">
 
     </form>
-
+    
     <form action="actor.php" method="POST">
         <label for="order">Order by:</label>
         <select name="order_list" id="order_list" class="myselect">

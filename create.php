@@ -81,12 +81,17 @@ if(isset($_POST['submit'])){
             <th style="width:20%;">Table ID</th>
             <th style="width:50%;">Table</th>
         </tr>
-
         
-        <?php while($table = mysqli_fetch_array($result)) :?>
-            <?php echo '<tr><td>' . $i+1 . '</td><td>' . $table[0] . '</td><tr>'; ?>
-            <?php $i++; ?>
-        <?php endwhile; ?>
+        
+        <?php while($table = mysqli_fetch_array($result)){
+            $i++; ?>
+            
+            <tr>
+                <td><?php echo $i; ?></td>
+                <td><?php echo $table[0]; ?></td>
+            </tr>
+        <?php } ?>
+            
     </table>
 
 

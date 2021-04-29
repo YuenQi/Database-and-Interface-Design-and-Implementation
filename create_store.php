@@ -1,9 +1,13 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
-$id_to_create = '';
+$query_last_id = "SELECT store_id from store ORDER BY store_id DESC LIMIT 1";
+$id_array = mysqli_query($conn, $query_last_id);
+$result1 = mysqli_fetch_assoc($id_array);
+$id_to_create = $result1['store_id']+1;
+
 $manager_staff_id = '';
 $address_id = '';
 date_default_timezone_set("Asia/Kuala_Lumpur");
@@ -11,20 +15,6 @@ $last_update = date("Y-m-d H:i:s");
 $errors = array('id'=>'', 'manager_staff_id'=>'', 'address_id'=>'');
 
 if(isset($_POST['submit'])){
-
-    $id_to_create = $_POST['id'];
-
-    if(empty($_POST['id'])){
-        $errors['id'] = 'ID is required. <br />';
-    }
-    else{
-        $sql_check_id = "SELECT store_id FROM store WHERE store_id = $id_to_create";
-        $result_check_id = mysqli_query($conn, $sql_check_id);
-
-        if(mysqli_num_rows($result_check_id) > 0){
-            $errors['id'] = 'ID is already in the table. Please key in another ID. <br />';
-        }
-    }
 
     if(empty($_POST['manager_staff_id'])){
         $errors['manager_staff_id'] = 'Manager_staff Id is required. <br />';
@@ -55,6 +45,7 @@ if(isset($_POST['submit'])){
         }
     }
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -64,7 +55,7 @@ if(isset($_POST['submit'])){
 
     <form action="create_store.php" class="white" method="POST">
 		<label>Store Id</label>
-        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>">
+        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>" readonly>
         <div class="red-text"><?php echo $errors['id']; ?></div>
 
 		<label>Manager_staff Id</label>

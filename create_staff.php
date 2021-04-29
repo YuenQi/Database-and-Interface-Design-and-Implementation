@@ -12,8 +12,12 @@
 
     include('templates/header.php');
     include('config/connect.php');
-
-    $id_to_create = '';
+    
+    $query_last_id = "SELECT staff_id from staff ORDER BY staff_id DESC LIMIT 1";
+    $id_array = mysqli_query($conn, $query_last_id);
+    $result1 = mysqli_fetch_assoc($id_array);
+    $id_to_create = $result1['staff_id']+1;
+    
     $first_name = '';
     $last_name = '';
     $address_id = '';
@@ -32,22 +36,10 @@
     if (isset($_POST['btn'])) {
 
         // Get records
-        $id_to_create = mysqli_real_escape_string($conn, $_POST['id']);
         $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
         $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
         $address_id = mysqli_real_escape_string($conn, $_POST['address_id']);
         $store_id = mysqli_real_escape_string($conn, $_POST['store_id']);
-
-        if (empty($_POST['id'])) {
-            $errors['id'] = 'ID is required. <br />';
-        } else {
-            $sql_check_id = "SELECT staff_id FROM staff WHERE staff_id = $id_to_create";
-            $result_check_id = mysqli_query($conn, $sql_check_id);
-
-            if (mysqli_num_rows($result_check_id) > 0) {
-                $errors['id'] = 'ID is already in the table. Please key in another ID. <br />';
-            }
-        }
 
         if (empty($_POST['first_name'])) {
             $errors['first_name'] = 'First name is required. <br />';
@@ -82,10 +74,10 @@
 
         //-----IMAGES------//
         if (!empty($_FILES['picture']['tmp_name'])) {
-            if(!is_dir('image/')){
-                mkdir('image/');
+            if(!is_dir('images/')){
+                mkdir('images/');
             }
-            chmod('image/',0777);
+            chmod('images/',0777);
             $name = $_FILES['picture']['name'];
             $type = $_FILES['picture']['type'];
             $data = file_get_contents($_FILES['picture']['tmp_name']);
@@ -144,7 +136,7 @@
     <form method="POST" action="#" class="white" enctype="multipart/form-data">
 
         <label>Staff Id</label>
-        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>">
+        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>" readonly>
         <div class="red-text"><?php echo $errors['id']; ?></div>
 
         <label>First Name</label>

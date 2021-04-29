@@ -1,29 +1,19 @@
 <?php
-
+ob_start();
 include('templates/header.php');
 include('config/connect.php');
 
-$id_to_create = '';
+$query_last_id = "SELECT category_id from category ORDER BY category_id DESC LIMIT 1";
+$id_array = mysqli_query($conn, $query_last_id);
+$result1 = mysqli_fetch_assoc($id_array);
+$id_to_create = $result1['category_id']+1;
+
 $name = '';
 date_default_timezone_set("Asia/Kuala_Lumpur");
 $last_update = date("Y-m-d H:i:s");
 $errors = array('id'=>'', 'name'=>'');
 
 if(isset($_POST['submit'])){
-
-    $id_to_create = $_POST['id'];
-
-    if(empty($_POST['id'])){
-        $errors['id'] = 'ID is required. <br />';
-    }
-    else{
-        $sql_check_id = "SELECT category_id FROM category WHERE category_id = $id_to_create";
-        $result_check_id = mysqli_query($conn, $sql_check_id);
-
-        if(mysqli_num_rows($result_check_id) > 0){
-            $errors['id'] = 'ID is already in the table. Please key in another ID. <br />';
-        }
-    }
 
     if(empty($_POST['name'])){
         $errors['name'] = 'Category name is required. <br />';
@@ -47,6 +37,7 @@ if(isset($_POST['submit'])){
         }
     }
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +47,7 @@ if(isset($_POST['submit'])){
 
     <form action="create_category.php" class="white" method="POST">
 		<label>Category Id</label>
-        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>">
+        <input type="text" name="id" value="<?php echo htmlspecialchars($id_to_create) ?>" readonly>
         <div class="red-text"><?php echo $errors['id']; ?></div>
 
 		<label>Category Name</label>
